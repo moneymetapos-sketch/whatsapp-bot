@@ -1,3 +1,4 @@
+# Dockerfile for WhatsApp Gateway
 FROM node:18-slim
 
 # Install chromium and dependencies
