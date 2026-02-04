@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خادم بوووت - WhatsApp Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #25D366;
+            --secondary: #128C7E;
+            --bg: #f4f7f6;
+            --white: #ffffff;
+            --text: #333333;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text);
+        }
+
+        .container {
+            background-color: var(--white);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 95%;
+        }
+
+        h1 {
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .status-ready {
+            background-color: #dcf8c6;
+            color: #075e54;
+            border: 1px solid #25D366;
+        }
+
+        .status-not_ready {
+            background-color: #fff3f3;
+            color: #d32f2f;
+            border: 1px solid #ffcdd2;
+        }
+
+        #qr-container {
+            background: #ffffff;
+            padding: 20px;
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            display: inline-block;
+            margin: 1.5rem 0;
+            min-width: 280px;
+            min-height: 280px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        img {
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin: 40px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .instructions {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-top: 2rem;
+            text-align: right;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #eee;
+        }
+
+        .refresh-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .refresh-btn:hover {
+            background: #0b6b5e;
+        }
+
+        .footer {
+            margin-top: 2.5rem;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🚀 خادم بوووت</h1>
+        <p style="color: #666; margin-bottom: 1.5rem;">WhatsApp Gateway Dashboard</p>
+
+        <div id="status-container">
+            <span class="status-badge status-not_ready">جاري التحقق من الاتصال...</span>
+        </div>
+
+        <div id="qr-container">
+            <div class="loader"></div>
+            <p>بانتظار رمز QR جديد...</p>
+        </div>
+
+        <div class="instructions">
+            <b>كيفية الربط:</b>
+            <ol style="margin-top: 10px;">
+                <li>افتح تطبيق واتساب على هاتفك المحمول.</li>
+                <li>اضغط على <b>الأجهزة المرتبطة</b> من القائمة.</li>
+                <li>اضغط على <b>ربط جهاز</b> ووجه الكاميرا نحو الشاشة.</li>
+            </ol>
+        </div>
+
+        <button class="refresh-btn" onclick="updateStatus()">تحديث الحالة يدوياً 🔄</button>
+
+        <div class="footer">
+            WhatsApp Gateway API v1.2 • متصل بجهاز العميل
+        </div>
+    </div>
+
+    <script>
+        let lastQR = null;
+        async function updateStatus() {
+            try {
+                const response = await fetch('/status');
+                const data = await response.json();
+
+                const statusContainer = document.getElementById('status-container');
+                const qrContainer = document.getElementById('qr-container');
+
+                if (data.isConnected) {
+                    statusContainer.innerHTML = '<span class="status-badge status-ready">✅ متصل وجاهز للإرسال</span>';
+                    qrContainer.innerHTML = `
+                        <div style="padding: 20px;">
+                            <span style="font-size: 4rem;">🎉</span>
+                            <p style="color: var(--primary); font-weight: bold; font-size: 1.3rem; margin-top:15px;">تم الربط بنجاح!</p>
+                            <p style="color: #666;">يمكنك الآن إغلاق هذه الصفحة والعودة للدردشة.</p>
+                        </div>
+                    `;
+                } else {
+                    statusContainer.innerHTML = '<span class="status-badge status-not_ready">⚠️ في انتظار مسح الرمز</span>';
+
+                    const qrResponse = await fetch('/qr');
+                    const qrData = await qrResponse.json();
+
+                    if (qrData.qrCode) {
+                        if (lastQR !== qrData.qrCode) {
+                            qrContainer.innerHTML = `<img src="${qrData.qrCode}" alt="QR Code"><p style="margin-top:10px; color:#555;">امسح الرمز لربط الحساب</p>`;
+                            lastQR = qrData.qrCode;
+                        }
+                    } else {
+                        qrContainer.innerHTML = '<div class="loader"></div><p>جاري توليد رمز QR...</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching status:', error);
+            }
+        }
+
+        // تحديث كل 3 ثوانٍ لدقة أعلى
+        setInterval(updateStatus, 3000);
+        updateStatus();
+    </script>
+</body>
+
+</html>
