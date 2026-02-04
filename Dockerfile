@@ -2,6 +2,8 @@
 FROM node:18-slim
 
 
+
+
 # Install chromium and dependencies
 RUN apt-get update && apt-get install -y \
     chromium \
@@ -11,11 +13,17 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 
+
+
 WORKDIR /app
+
+
 
 
 # Create auth folder and set permissions
 RUN mkdir -p .wwebjs_auth .wwebjs_cache && chmod -R 777 .wwebjs_auth .wwebjs_cache
+
+
 
 
 # Copy package files
@@ -23,8 +31,12 @@ COPY package*.json ./
 RUN npm install --production
 
 
+
+
 # Copy app source
 COPY . .
+
+
 
 
 # Environment variables
@@ -33,8 +45,11 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 
+
 # Standard port for cloud services
 EXPOSE 3000
 
 
-CMD ["node", ]
+
+
+CMD ["node", "index.js"]
