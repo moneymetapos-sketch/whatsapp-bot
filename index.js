@@ -29,6 +29,7 @@ const initializeWhatsApp = () => {
     }),
     puppeteer: {
       headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -42,6 +43,8 @@ const initializeWhatsApp = () => {
       ]
     }
   });
+
+  console.log('⏳ Initializing WhatsApp client...');
 
   // حدث عند توليد رمز الاستجابة السريعة (QR Code)
   whatsappClient.on('qr', (qr) => {
